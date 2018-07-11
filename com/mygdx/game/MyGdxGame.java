@@ -8,6 +8,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.entities.Player;
 import com.mygdx.game.world.GameMap;
@@ -16,6 +18,8 @@ import com.mygdx.game.world.TiledGameMap;
 
 public class MyGdxGame extends ApplicationAdapter {
 	OrthographicCamera cam;
+	int cameraWidth = 1280;
+	int cameraHeight = 720;
 	SpriteBatch batch;
 	
 	GameMap gameMap;
@@ -24,7 +28,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void create () {
 		batch = new SpriteBatch();
 		
-		Gdx.graphics.setWindowedMode(1280, 720);
+		Gdx.graphics.setWindowedMode(cameraWidth, cameraHeight);
 		float width = Gdx.graphics.getWidth();
 		float height = Gdx.graphics.getHeight();
 		
@@ -45,10 +49,34 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		Vector3 pos = cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 		
-		if (Gdx.input.isTouched()) {
-			cam.translate(-Gdx.input.getDeltaX(), Gdx.input.getDeltaY());
-			cam.update();
+//		if (Gdx.input.isTouched()) {
+//			cam.translate(-Gdx.input.getDeltaX(), Gdx.input.getDeltaY());
+//			cam.update();
+//		}
+		
+		cam.translate(
+				Math.subtractExact((long)gameMap.entities.get(0).getX(), (long)cam.position.x) * 0.05f,
+				Math.subtractExact((long)gameMap.entities.get(0).getY(), (long)cam.position.y) * 0.05f,
+				0
+		);
+		
+		if (cam.position.x + (cam.viewportWidth / 2) > gameMap.getPixelWidth()) {
+			System.out.println("Overlap on the right!");
+			cam.position.x = gameMap.getPixelWidth() - (cam.viewportWidth / 2);
+		} else if (cam.position.x - (cam.viewportWidth / 2) < 0) {
+			System.out.println("Overlap on the left!");
+			cam.position.x = 0 + (cam.viewportWidth / 2);
 		}
+		
+		if (cam.position.y + (cam.viewportHeight / 2) > gameMap.getPixelHeight()) {
+			System.out.println("Overlap on the top!");
+			cam.position.y = gameMap.getPixelHeight() - (cam.viewportHeight / 2);
+		} else if (cam.position.y - (cam.viewportHeight / 2) < 0) {
+			System.out.println("Overlap on the bottom!");
+			cam.position.y = 0 + (cam.viewportHeight / 2);
+		}
+		
+		cam.update();
 		
 		if (Gdx.input.justTouched()) {
 			TileType type = gameMap.getTileTypeByLocation(1, pos.x, pos.y);
