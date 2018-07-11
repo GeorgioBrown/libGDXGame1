@@ -13,7 +13,7 @@ public class Player extends Entity {
 	private static final float MOVE_FORCE = 2.5f;
 	private static final float MOVE_SPEED = 100;
 	private static final float DECELERATION_FORCE = 0.8f;
-	private static final float AIR_CONTROL = 0.33f;
+	private static final float AIR_CONTROL = 0.66f;
 	
 	Texture image;
 	
